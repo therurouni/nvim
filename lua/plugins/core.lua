@@ -1,53 +1,35 @@
--- ~/.config/nvim/lua/plugins/core.lua
 return {
 
   -----------------------------------------------------------------------
-  -- 🌈 THEME: Catppuccin (Black Background)
+  -- 🌈 THEME: Tokyo Night (Force Full Black Background)
   -----------------------------------------------------------------------
-
-{
-  "folke/tokyonight.nvim",
-  lazy = false,
-  priority = 1000,
-  config = function()
-    require("tokyonight").setup({
-      style = "night",   -- night / storm / moon / day
-      transparent = false,
-
-      -- These let us override UI elements
-      on_colors = function(colors)
-        -- keep original syntax colors (do nothing)
-        return colors
-      end,
-
-      on_highlights = function(hl, colors)
-        --------------------------------------------------------------------
-        -- FORCE FULL BLACK UI WHILE KEEPING TOKYONIGHT SYNTAX
-        --------------------------------------------------------------------
-        hl.Normal = { bg = "#000000", fg = colors.fg }
-        hl.NormalNC = { bg = "#000000", fg = colors.fg }
-
-        hl.SignColumn = { bg = "#000000" }
-        hl.LineNr = { bg = "#000000", fg = colors.dark5 }
-        hl.CursorLine = { bg = "#000000" }
-        hl.CursorLineNr = { bg = "#000000", fg = colors.blue }
-
-        hl.StatusLine = { bg = "#000000", fg = colors.blue }
-        hl.TabLineFill = { bg = "#000000" }
-        hl.WinSeparator = { bg = "#000000", fg = "#222222" }
-
-        -- Diagnostics background clean
-        hl.DiagnosticVirtualTextError = { bg = "#000000", fg = colors.red }
-        hl.DiagnosticVirtualTextWarn  = { bg = "#000000", fg = colors.yellow }
-        hl.DiagnosticVirtualTextInfo  = { bg = "#000000", fg = colors.blue }
-        hl.DiagnosticVirtualTextHint  = { bg = "#000000", fg = colors.green }
-      end,
-    })
-
-    -- APPLY TOKYONIGHT
-    vim.cmd.colorscheme("tokyonight")
-  end,
-},
+  {
+    "folke/tokyonight.nvim",
+    lazy = false,
+    priority = 1000,
+    config = function()
+      require("tokyonight").setup({
+        style = "night",
+        transparent = false,
+        on_highlights = function(hl, colors)
+          hl.Normal = { bg = "#000000", fg = colors.fg }
+          hl.NormalNC = { bg = "#000000", fg = colors.fg }
+          hl.SignColumn = { bg = "#000000" }
+          hl.LineNr = { bg = "#000000", fg = colors.dark5 }
+          hl.CursorLine = { bg = "#000000" }
+          hl.CursorLineNr = { bg = "#000000", fg = colors.blue }
+          hl.StatusLine = { bg = "#000000", fg = colors.blue }
+          hl.TabLineFill = { bg = "#000000" }
+          hl.WinSeparator = { bg = "#000000", fg = "#222222" }
+          hl.DiagnosticVirtualTextError = { bg = "#000000", fg = colors.red }
+          hl.DiagnosticVirtualTextWarn  = { bg = "#000000", fg = colors.yellow }
+          hl.DiagnosticVirtualTextInfo  = { bg = "#000000", fg = colors.blue }
+          hl.DiagnosticVirtualTextHint  = { bg = "#000000", fg = colors.green }
+        end,
+      })
+      vim.cmd.colorscheme("tokyonight")
+    end,
+  },
 
   -----------------------------------------------------------------------
   -- 🔍 TELESCOPE (Fuzzy Finder)
@@ -76,22 +58,22 @@ return {
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
-  },
-
-  -----------------------------------------------------------------------
-  -- 🔄 AUTOPAIRS (Bracket autocomplete)
-  -----------------------------------------------------------------------
-  {
-    "windwp/nvim-autopairs",
-    event = "InsertEnter",
     config = function()
-      require("nvim-autopairs").setup()
+      require("nvim-treesitter.configs").setup({
+        ensure_installed = { "go", "cpp", "java", "python", "lua", "vim", "bash" },
+        highlight = { enable = true },
+      })
     end,
   },
 
   -----------------------------------------------------------------------
-  -- 📝 SNIPPETS: LuaSnip + friendly snippets + your custom snippets
+  -- 🔄 AUTOPAIRS & SNIPPETS
   -----------------------------------------------------------------------
+  {
+    "windwp/nvim-autopairs",
+    event = "InsertEnter",
+    config = function() require("nvim-autopairs").setup() end,
+  },
   {
     "L3MON4D3/LuaSnip",
     dependencies = { "rafamadriz/friendly-snippets" },
@@ -104,7 +86,7 @@ return {
   },
 
   -----------------------------------------------------------------------
-  -- 📦 TOGGLETERM (Floating Terminal)
+  -- 📦 TERMINAL & UTILS
   -----------------------------------------------------------------------
   {
     "akinsho/toggleterm.nvim",
@@ -117,117 +99,81 @@ return {
       })
     end,
   },
-
-  -----------------------------------------------------------------------
-  -- 🏁 COMPETITEST (Competitive Programming)
-  -----------------------------------------------------------------------
   {
     "xeluxee/competitest.nvim",
     dependencies = { "MunifTanjim/nui.nvim" },
     config = function()
       require("competitest").setup({
         compile_command = {
-          cpp = {
-            exec = "g++",
-            args = { "-std=c++17", "$(FNAME)", "-O2", "-Wall", "-o", "$(FNOEXT)" },
-          },
-          java = {
-            exec = "/Library/Java/JavaVirtualMachines/jdk-22.jdk/Contents/Home/bin/javac",
-            args = { "$(FNAME)" },
-          },
+          cpp = { exec = "g++", args = { "-std=c++17", "$(FNAME)", "-O2", "-Wall", "-o", "$(FNOEXT)" } },
+          java = { exec = "javac", args = { "$(FNAME)" } },
+          go = { exec = "go", args = { "build", "-o", "$(FNOEXT)", "$(FNAME)" } },
         },
         run_command = {
           cpp = { exec = "./$(FNOEXT)" },
-          java = {
-            exec = "/Library/Java/JavaVirtualMachines/jdk-22.jdk/Contents/Home/bin/java",
-            args = { "$(FNOEXT)" },
-          },
+          java = { exec = "java", args = { "$(FNOEXT)" } },
+          go = { exec = "./$(FNOEXT)" },
         },
       })
     end,
   },
-
-  -----------------------------------------------------------------------
-  -- 🔥 git-conflict (resolve merge conflicts)
-  -----------------------------------------------------------------------
   { "akinsho/git-conflict.nvim", version = "*", config = true },
-
-  -----------------------------------------------------------------------
-  -- 🎯 Grapple (Jump between important files)
-  -----------------------------------------------------------------------
   { "cbochs/grapple.nvim", config = true },
-
-  -----------------------------------------------------------------------
-  -- 💾 Auto-save
-  -----------------------------------------------------------------------
   { "Pocco81/auto-save.nvim", config = true },
-
-  -----------------------------------------------------------------------
-  -- 💼 Auto-session (restore last session)
-  -----------------------------------------------------------------------
-  {
-    "rmagatti/auto-session",
-    config = function()
-      require("auto-session").setup({
-        auto_session_enabled = true,
-      })
-    end,
-  },
-
-  -----------------------------------------------------------------------
-  -- 🧵 Overseer (task/job runner)
-  -----------------------------------------------------------------------
+  { "rmagatti/auto-session", config = { auto_session_enabled = true } },
   { "stevearc/overseer.nvim", config = true },
+  { "b0o/incline.nvim", config = function() require("incline").setup() end },
 
   -----------------------------------------------------------------------
-  -- 🍥 Incline (winbar replacement)
-  -----------------------------------------------------------------------
-  {
-    "b0o/incline.nvim",
-    config = function()
-      require("incline").setup()
-    end,
-  },
-
-  -----------------------------------------------------------------------
-  -- 🔧 MASON (Installer for LSP, DAP, Linters, Formatters)
-  -----------------------------------------------------------------------
-  {
-    "williamboman/mason.nvim",
-    config = true,
-  },
-
-  -----------------------------------------------------------------------
-  -- 🔧 Mason-LSPConfig (Auto bridge between Mason & LSPConfig)
-  -----------------------------------------------------------------------
-  {
-    "williamboman/mason-lspconfig.nvim",
-    dependencies = { "williamboman/mason.nvim" },
-    config = function()
-      require("mason-lspconfig").setup({
-        ensure_installed = {
-          "clangd",
-          "jdtls",
-          "pyright",
-          "tsserver",
-        },
-      })
-    end,
-  },
-
-  -----------------------------------------------------------------------
-  -- 🧠 LSPCONFIG (Native LSP)
+  -- 🔧 THE LSP ENGINE (Optimized & Consolidated)
   -----------------------------------------------------------------------
   {
     "neovim/nvim-lspconfig",
+    dependencies = {
+      "williamboman/mason.nvim",
+      "williamboman/mason-lspconfig.nvim",
+      "hrsh7th/cmp-nvim-lsp",
+    },
     config = function()
-      local lsp = require("lspconfig")
+      local lspconfig = require("lspconfig")
+      local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
-      lsp.clangd.setup({})
-      lsp.jdtls.setup({})
-      lsp.pyright.setup({})
-      lsp.tsserver.setup({})
+      require("mason").setup()
+      require("mason-lspconfig").setup({
+        ensure_installed = { "clangd", "jdtls", "pyright", "gopls", "ts_ls" },
+        handlers = {
+          function(server_name)
+            lspconfig[server_name].setup({
+              capabilities = capabilities,
+            })
+          end,
+          ["gopls"] = function()
+            lspconfig.gopls.setup({
+              capabilities = capabilities,
+              settings = {
+                gopls = {
+                  completeUnimported = true,
+                  usePlaceholders = true,
+                  analyses = { unusedparams = true },
+                },
+              },
+            })
+          end,
+        },
+      })
     end,
+  },
+
+  -----------------------------------------------------------------------
+  -- 🐹 GO SPECIALIST
+  -----------------------------------------------------------------------
+  {
+    "ray-x/go.nvim",
+    dependencies = { "ray-x/guihua.lua" },
+    config = function() require("go").setup() end,
+    event = {"CmdlineEnter"},
+    ft = {"go", 'gomod'},
+    build = ':lua require("go.install").update_all_sync()'
   },
 
   -----------------------------------------------------------------------
@@ -240,7 +186,6 @@ return {
       "hrsh7th/cmp-nvim-lsp",
       "hrsh7th/cmp-buffer",
       "hrsh7th/cmp-path",
-      "L3MON4D3/LuaSnip",
       "saadparwaiz1/cmp_luasnip",
     },
     config = function()
@@ -248,9 +193,7 @@ return {
       local luasnip = require("luasnip")
 
       cmp.setup({
-        snippet = {
-          expand = function(args) luasnip.lsp_expand(args.body) end,
-        },
+        snippet = { expand = function(args) luasnip.lsp_expand(args.body) end },
         mapping = cmp.mapping.preset.insert({
           ["<C-j>"] = cmp.mapping.select_next_item(),
           ["<C-k>"] = cmp.mapping.select_prev_item(),

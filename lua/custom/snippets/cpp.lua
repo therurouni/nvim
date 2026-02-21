@@ -10,8 +10,9 @@ return {
       "#include <bits/stdc++.h>",
       "using namespace std;",
       "#define int long long",
-      "#define endl \"\\n\"",
-      "#define mod 1000000007;",
+      "#define endl '\\n'",
+      "using pii = pair<int,int>;",
+      "const int mod = 1000000007;",
       "const int inf = 1e18;",
       "",
       "",
@@ -24,7 +25,7 @@ return {
       "void solve() {",
       "    ",
     }),
-    i(0),       -- <== Cursor will appear HERE
+    i(0),
     t({
       "",
       "}",
